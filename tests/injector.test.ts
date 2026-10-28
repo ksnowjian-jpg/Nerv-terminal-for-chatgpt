@@ -11,6 +11,8 @@ describe('controlled injection',()=>{
   it('recognizes the observed desktop shell without selecting hidden main surfaces or document editors',()=>{
     document.body.innerHTML='<main hidden></main><div id="layout"><aside class="app-shell-left-panel"><div class="sidebar-navigation"></div></aside><div><main id="chat"><div data-composer-body><div class="ProseMirror" role="textbox" contenteditable="true"></div></div></main></div></div><div class="writing-block-editor"><div class="ProseMirror" role="textbox" contenteditable="true"></div></div>';
     const result=new CompatibilityAdapter(document).inspect();expect(result).toMatchObject({compatible:true,profile:'desktop-2026'});expect(result.main?.id).toBe('chat');expect(result.layout?.id).toBe('layout');
+    document.querySelector('[data-composer-body] .ProseMirror')!.setAttribute('contenteditable','false');
+    expect(new CompatibilityAdapter(document).inspect()).toMatchObject({compatible:true,main:result.main,composer:result.composer});
     document.querySelector('[data-composer-body]')!.remove();expect(new CompatibilityAdapter(document).inspect().compatible).toBe(false);
   });
   it('rejects remote sockets, redirects in URLs and unrelated renderer targets',()=>{

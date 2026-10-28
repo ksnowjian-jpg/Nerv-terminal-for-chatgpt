@@ -64,7 +64,9 @@ export class CompatibilityAdapter {
     // Observed in ChatGPT display-name / OpenAI.Codex 26.1007.2314.0.
     // Avoid hidden menu surfaces, the quick window and Work document editors.
     const desktopNavigation=[...this.doc.querySelectorAll<HTMLElement>('aside.app-shell-left-panel')].find(el=>this.available(el));
-    const editors=[...this.doc.querySelectorAll<HTMLElement>('[data-composer-body] .ProseMirror[contenteditable="true"][role="textbox"]')].filter(el=>this.available(el));
+    // Sending briefly makes this same textbox read-only. That is still the
+    // chat surface, not navigation away from it; preserve its appearance.
+    const editors=[...this.doc.querySelectorAll<HTMLElement>('[data-composer-body] .ProseMirror[role="textbox"]')].filter(el=>this.available(el));
     if(desktopNavigation?.querySelector('.sidebar-navigation') && editors.length===1) {
       const editor=editors[0];
       const desktopMain=editor.closest<HTMLElement>('main');
