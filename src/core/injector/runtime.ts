@@ -2,7 +2,7 @@ import { CompatibilityAdapter, type CompatibilityResult } from '../compatibility
 import { nativeTokenCss,userBubbleTokenCss } from '../compatibility/styles';
 import {refreshOfficialUsage} from '../compatibility/usage';
 import {finishPaletteTransitions} from '../compatibility/transitions';
-import { measureReadability, type ReadabilityReport } from '../compatibility/readability';
+import { measureReadability,resetReadabilityMotion, type ReadabilityReport } from '../compatibility/readability';
 import { ThemeManager } from '../theme-manager';
 import type { ThemePackage } from '../theme-manager/schema';
 import { UsageMonitor,unavailable } from '../../features/usage-monitor';
@@ -75,12 +75,14 @@ function reconcile() {
 }
 function scheduleCheck() {if(check||!desired)return;check=setTimeout(()=>{check=undefined;reconcile();},150);}
 function mount(compatibility:CompatibilityResult,theme:ThemePackage,variant:string) {
-    readability=null;
+    readability=null;resetReadabilityMotion();
     const root=document.documentElement;
     const saved: Array<[Element,string,string|null]> = [];
     const mark=(el:Element,key:string,value:string)=>{saved.push([el,key,el.getAttribute(key)]);el.setAttribute(key,value);};
     let monitor: UsageMonitor|undefined;
     let audit: ReturnType<typeof setTimeout>|undefined;
+    let unsettledFailures=0;
+    let visibilityCheck:(()=>void)|undefined;
     let panel: HTMLElement|undefined;
     let backdrop: HTMLElement|undefined;
     let nativeReplacement:HTMLElement|undefined;
@@ -93,6 +95,7 @@ function mount(compatibility:CompatibilityResult,theme:ThemePackage,variant:stri
     let chromeActive=true;
     cleanup=()=>{
       if(audit)clearTimeout(audit);monitor?.stop();panel?.remove();backdrop?.remove();nativeReplacement?.remove();
+      if(visibilityCheck)document.removeEventListener('visibilitychange',visibilityCheck);
       chromeActive=false;chromeSizer?.disconnect();
       welcome?.clear();
       composerCopy?.clear();
@@ -151,18 +154,26 @@ function mount(compatibility:CompatibilityResult,theme:ThemePackage,variant:stri
         void monitor!.refreshOfficial(signal=>refreshOfficialUsage(document,signal,focus));
       };
       finishPaletteTransitions(compatibility);
-      const scheduleAudit=()=>{
-        if(compatibility.profile!=='desktop-2026')return;
-        if(audit)clearTimeout(audit);
-        audit=setTimeout(()=>{
+      const runAudit=()=>{
         audit=undefined;
         const current=adapter.inspect();
         if(!current.compatible||!sameAnchors(current,compatibility)){scheduleCheck();return;}
         finishPaletteTransitions(compatibility);
         readability=measureReadability(compatibility);
-        if(!readability.passed)block(readability.reason);
-      },600);
+        if(readability.passed){unsettledFailures=0;return;}
+        if(readability.pending){unsettledFailures=0;audit=setTimeout(runAudit,document.hidden?1000:250);return;}
+        // A single frame is insufficient to withdraw the entire session. Still
+        // fail closed when a settled problem survives the confirmation audit.
+        if(++unsettledFailures<2){audit=setTimeout(runAudit,250);return;}
+        block(readability.reason);
       };
+      const scheduleAudit=()=>{
+        if(compatibility.profile!=='desktop-2026')return;
+        if(audit)clearTimeout(audit);
+        audit=setTimeout(runAudit,600);
+      };
+      visibilityCheck=()=>{if(!document.hidden){resetReadabilityMotion();scheduleAudit();}};
+      document.addEventListener('visibilitychange',visibilityCheck);
       attachment={compatibility,audit:scheduleAudit,syncChrome,intact:()=>{const hosts=adapter.decorationHosts(compatibility);return !!(panel?.isConnected&&appearance?.style.isConnected&&document.querySelector('style[data-cte-style]')&&compatibility.main?.getAttribute('data-cte-region')==='main'&&chrome.every(node=>node.isConnected)&&hosts.navigation===chromeHosts.navigation&&hosts.header===chromeHosts.header);}};
       scheduleAudit();
       phase='active';stateReason=compatibility.reason;

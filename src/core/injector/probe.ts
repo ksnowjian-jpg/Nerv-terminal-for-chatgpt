@@ -17,9 +17,10 @@ export function inspectStartup() {
   const editor=anchors.composer!.querySelector<HTMLElement>('.ProseMirror[role="textbox"]')??anchors.composer!;
   const rect=editor.getBoundingClientRect(),panelRect=panel?.getBoundingClientRect();
   const panelVisible=!!panel&&getComputedStyle(panel).display!=='none';
-  const checks={themeEnabled:!!session?.enabled&&styles,panelMounted:!!panel,composerVisible:rect.width>4&&rect.height>4,readability:!readability||readability.passed,panelWithinViewport:!panelVisible||!!panelRect&&panelRect.left>=0&&panelRect.right<=innerWidth+1,composerNotCovered:!panelVisible||!!panelRect&&rect.right<=panelRect.left+1};
+  const pending=readability?.pending===true;
+  const checks={themeEnabled:!!session?.enabled&&styles,panelMounted:!!panel,composerVisible:rect.width>4&&rect.height>4,readability:!readability||readability.passed||pending,panelWithinViewport:!panelVisible||!!panelRect&&panelRect.left>=0&&panelRect.right<=innerWidth+1,composerNotCovered:!panelVisible||!!panelRect&&rect.right<=panelRect.left+1};
   const failedChecks=Object.entries(checks).filter(([,passed])=>!passed).map(([name])=>name);
-  return {compatible:failedChecks.length===0,checksPassed:failedChecks.length===0,phase:session?.phase,pending:false,checks,failedChecks,readability,reason:failedChecks.length?`启动检查未通过：${failedChecks.join(', ')}`:'主题已启用，当前页面可读性与布局检查通过'};
+  return {compatible:failedChecks.length===0,checksPassed:failedChecks.length===0&&!pending,phase:session?.phase,pending:pending&&failedChecks.length===0,checks,failedChecks,readability,reason:failedChecks.length?`启动检查未通过：${failedChecks.join(', ')}`:pending?'主题已启用，等待原生文字渐入结束后复查':'主题已启用，当前页面可读性与布局检查通过'};
 }
 export function inspectRenderer() {
   const result = getAnchors();
