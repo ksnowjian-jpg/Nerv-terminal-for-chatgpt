@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 176">
+  <g fill="none" stroke="#f56b43" stroke-width="1">
+    <path d="M15 12h34m202 0h34M15 164h34m202 0h34" opacity=".45"/>
+    <path d="M150 54v24m-8 12-40 23m56-23 40 23" stroke-dasharray="2 4"/>
+    <path d="M119 8h62l17 29-48 29-48-29Z" fill="#201b17"/>
+    <path d="m28 95 47-28 47 28v56H28Z" fill="#201b17"/>
+    <path d="m178 95 47-28 47 28v56h-94Z" fill="#201b17"/>
+    <path d="M133 85h34m-34 12h34" opacity=".4"/>
+  </g>
+  <g text-anchor="middle" font-family="monospace" fill="#e7e6df">
+    <text x="150" y="30" font-size="11">MELCHIOR</text><text x="150" y="44" font-size="9" fill="#f56b43">01</text>
+    <text x="75" y="110" font-size="10">BALTHASAR</text><text x="75" y="130" font-size="18" fill="#f56b43">02</text>
+    <text x="225" y="110" font-size="11">CASPER</text><text x="225" y="130" font-size="18" fill="#f56b43">03</text>
+    <text x="150" y="94" font-size="10" fill="#f56b43">MAGI</text>
+    <text x="150" y="171" font-size="7" letter-spacing="2" fill="#92958d">TRI-CORE / THEME SCHEMATIC</text>
+  </g>
+</svg>

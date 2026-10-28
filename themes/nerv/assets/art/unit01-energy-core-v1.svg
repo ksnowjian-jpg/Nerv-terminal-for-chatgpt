@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="164" viewBox="0 0 320 164">
+  <path d="M113 8H207L254 82L207 156H113L66 82Z" fill="#191820" stroke="#755f94" stroke-width="1"/>
+  <path d="M121 22H199L237 82L199 142H121L83 82Z" fill="#25202e" stroke="#e8ac62" stroke-width="4" opacity=".2"/>
+  <path d="M123 25H197L233 82L197 139H123L87 82Z" fill="none" stroke="#e8ac62" stroke-width="2"/>
+  <path d="M132 40H188L215 82L188 124H132L105 82Z" fill="none" stroke="#bd8e56" stroke-width="1.5"/>
+  <path d="M139 53H181L199 82L181 111H139L121 82Z" fill="#1c1b24" stroke="#b9f16d" stroke-width="2"/>
+  <text x="160" y="91" text-anchor="middle" fill="#d2b9ee" font-family="Consolas,monospace" font-size="27">01</text>
+  <path d="M8 30H54L74 50M8 134H54L74 114M246 50L266 30H312M246 114L266 134H312" fill="none" stroke="#66536e" stroke-width="1"/>
+  <path d="M6 80H51M269 80H314" fill="none" stroke="#9ecc6e" stroke-width="1"/>
+  <path d="M28 72H43V88H28ZM278 72H293V88H278Z" fill="#b9f16d" opacity=".75"/>
+  <text x="10" y="22" fill="#c9bed9" font-family="Consolas,monospace" font-size="8" letter-spacing="1">AUXILIARY</text>
+  <text x="310" y="22" text-anchor="end" fill="#c9bed9" font-family="Consolas,monospace" font-size="8" letter-spacing="1">RESERVE</text>
+  <text x="160" y="161" text-anchor="middle" fill="#9f91b2" font-family="Consolas,monospace" font-size="7" letter-spacing="2">UNIT-01 / ENERGY CORE</text>
+</svg>

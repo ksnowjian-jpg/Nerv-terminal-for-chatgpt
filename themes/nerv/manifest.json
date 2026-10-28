@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1, "id": "nerv", "name": "NERV Terminal", "version": "0.7.0", "author": "Theme Engine Project",
+  "description": "左侧 NERV、右侧初号机驾驶舱；紫钛装甲、荧光绿能量与琥珀色核心纹样。",
+  "engineVersion": "^0.1.0", "tokens": "tokens.json", "layout": "layout.json", "css": "theme.css",
+  "assets": {
+    "emblem": "assets/nerv-emblem.svg",
+    "images": {"leaf":"assets/nerv-emblem.svg","magi":"assets/magi.svg","unit01":"assets/art/eva01-shadow-v1.webp","unit01-wordmark":"assets/art/unit01-reference-v2.webp","energy-core":"assets/art/unit01-energy-core-v1.svg"},
+    "icons": {"refresh":"assets/icons/radar.svg","restore":"assets/icons/power.svg","status":"assets/icons/cpu.svg","brand":"assets/icons/scan-line.svg","home":"assets/nerv-emblem.svg"},
+    "fonts": [
+      {"family":"Share Tech Mono","file":"assets/fonts/ShareTechMono-Regular.ttf","weight":400},
+      {"family":"Barlow Condensed","file":"assets/fonts/BarlowCondensed-SemiBold.ttf","weight":600}
+    ]
+  },
+  "presentation": {
+    "panelTitle":"UNIT-01 / COCKPIT",
+    "brandWordmark":"unit01-wordmark",
+    "brandLabel":"初号機",
+    "brandSubtitle":"初号机专用驾驶界面",
+    "welcomeText":"系统已就绪，等待指令。",
+    "welcomeCaption":"NERV TERMINAL / SYSTEM ONLINE",
+    "composerPlaceholder":"输入消息或指令…",
+    "panelText":{
+      "panelLabel":"初号机驾驶舱","intro":"初号机主题界面已载入","title":"剩余能量","refresh":"能量校正","restore":"退出初号机","restoreHint":"退出初号机主题并恢复 ChatGPT 原版界面",
+      "collapse":"收起驾驶舱","expand":"展开驾驶舱","lastRead":"上次校正","reset":"补给窗口","neverRead":"尚未校正","resetUnknown":"官方未提供时间",
+      "statusLive":"能量已校正 · 官方读数","statusCached":"保留能量读数 · 非实时","statusUnavailable":"能量读数未就绪","statusRefreshing":"正在进行能量校正…",
+      "noteInitial":"能量值对应官方剩余使用额度。点击“能量校正”从头像菜单读取。","noteLive":"本次能量校正来自官方剩余使用额度。","noteCached":"保留上次校正的官方额度；再次校正可更新读数。","noteRefreshing":"正在打开官方账户菜单，读取剩余额度…",
+      "progressLabel":"剩余能量（官方使用额度）","themeLabel":"当前涂装："
+    },
+    "navigationBadge":{"image":"leaf","label":"NERV","caption":"SPECIAL AGENCY","detail":"LOCAL / TERMINAL 01"},
+    "headerBand":{"label":"EVA / UNIT-01","caption":"TEST TYPE / PILOT INTERFACE","serial":"01"},
+    "diagram":{"image":"energy-core","title":"ENERGY / AUXILIARY CORE","caption":"辅助电源 / UNIT-01 RESERVE"},
+    "watermark":{"image":"unit01","opacity":0.14,"render":"image"},
+    "footer":"UNIT-01 // PERSONAL TERMINAL"
+  },
+  "variants": [
+    { "id": "eva-01", "name": "EVA-01 · 紫 / 绿", "tokens": { "accent": "#b797e6", "accentText": "#14101c", "success": "#b3db78" } },
+    { "id": "eva-00", "name": "EVA-00 · 蓝 / 白", "tokens": { "accent": "#8fc8eb", "accentText": "#101a21", "success": "#b6d5d5", "chatBackground":"#101c29", "chatSurface":"#162637", "chatElevated":"#20364b", "chatText":"#eaf3fb", "chatMuted":"#a9c1d4", "chatAccent":"#8fc8eb", "chatAccentText":"#101a21", "chatBorder":"#3a5871", "userBubbleBackground":"#23405b", "userBubbleText":"#eaf3fb" } }
+  ],
+  "motion": { "durationMs": 160 },
+  "startup": { "enabled": true, "durationMs": 1500, "lines": ["SYSTEM INITIALIZING", "MAGI SYSTEM ONLINE"], "sound": false }
+}

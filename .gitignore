@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.npm-cache/
+test-results/
+playwright-report/
+*.log
+.test-temp/
+.local-tools/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+Thumbs.db
+Desktop.ini

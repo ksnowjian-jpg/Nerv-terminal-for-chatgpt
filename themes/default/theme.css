@@ -1,0 +1,5 @@
+[data-cte-root] .panel-heading { letter-spacing: .03em; }
+[data-cte-root] .warning-stripe { background: var(--cte-border); }
+[data-cte-root] [data-cte-region="navigation"] { background-color: var(--cte-surface); }
+[data-cte-root] [data-cte-region="main"] { background-color: var(--cte-background); color: var(--cte-text); }
+[data-cte-root] [data-cte-region="composer"] { border: 1px solid var(--cte-border); border-radius: var(--cte-radius); }

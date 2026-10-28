@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1, "id": "default", "name": "Quiet Default", "version": "0.1.0", "author": "Theme Engine Project",
+  "description": "简洁的中性配色与圆角面板，用于验证独立主题与布局切换。不是官方原版。",
+  "engineVersion": "^0.1.0", "tokens": "tokens.json", "layout": "layout.json", "css": "theme.css",
+  "assets": {}, "variants": [], "motion": { "durationMs": 120 },
+  "startup": { "enabled": false, "durationMs": 0, "lines": [], "sound": false }
+}
