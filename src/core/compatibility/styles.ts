@@ -71,6 +71,9 @@ export const nativeTokenCss = `[data-cte-root] {
   --color-text-secondary-soft:var(--cte-text)!important;
   --color-text-secondary-soft-alt:var(--cte-muted)!important;
   --color-text-secondary-solid:var(--cte-muted)!important;
+  /* Native risk labels also appear inside table cells and ordinary text.
+     Preserve their red meaning with paired light/dark foregrounds. */
+  --color-text-danger:light-dark(#b42318,#ff8a80)!important;
   --color-surface-card:var(--cte-surface)!important;
   --color-surface-elevated:var(--cte-elevated)!important;
   --color-background-control-opaque:var(--cte-elevated)!important;
@@ -145,6 +148,7 @@ export const nativeTokenCss = `[data-cte-root] {
 }
 ${responseScopes} {
   color:var(--cte-text);
+  color-scheme:var(--cte-color-scheme)!important;
   --text-primary:var(--cte-text)!important;
   --text-secondary:var(--cte-muted)!important;
   --tw-prose-body:var(--cte-text)!important;
@@ -169,6 +173,14 @@ ${responseScopes} {
    Pair their heading text with the theme just as Markdown headings already do. */
 ${titleSelectors.join(',')} {
   --text-base-color:var(--cte-text)!important;
+}
+/* The adapter marks only styled, non-interactive DIL text that needs repair.
+   Keep the original card palette; give its text a readable foreground. */
+[data-cte-root] [data-cte-region="main"] [data-cte-reply-ink="dark"] {
+  color:#000!important;-webkit-text-fill-color:#000!important;
+}
+[data-cte-root] [data-cte-region="main"] [data-cte-reply-ink="light"] {
+  color:#fff!important;-webkit-text-fill-color:#fff!important;
 }
 /* Citation pills explicitly paint an inline var(--gray-75), bypassing their
    semantic surface variables. Re-pair only neutral soft pills in replies. */

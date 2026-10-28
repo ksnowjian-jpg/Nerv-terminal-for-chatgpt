@@ -14,6 +14,13 @@ for(const replaced of ['composer','main','cached main'] as const)test(`a replace
   },composer);
   const theme=(await discoverThemes(path.resolve('themes'))).themes.find(t=>t.manifest.id==='nerv')!;
   expect(await page.evaluate(await startupExpression(theme,''))).toMatchObject({compatible:true,checksPassed:true});
+  await page.locator('[data-cte-panel]').evaluate(el=>el.setAttribute('data-test-identity','kept'));
+  await page.evaluate(()=>{
+    const state={reserveChanges:0,panelRemovals:0};
+    const observer=new MutationObserver(records=>{for(const r of records){if(r.type==='attributes')state.reserveChanges++;for(const node of r.removedNodes)if(node instanceof Element&&node.matches('[data-cte-panel]'))state.panelRemovals++;}});
+    observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['data-cte-reserve']});
+    (window as any).__routeChurn={state,observer};
+  });
   for(let i=0;i<3;i++){
     const firstFrame=await page.evaluate(async({replaced,composer})=>{
       if(replaced==='cached main'){
@@ -27,7 +34,9 @@ for(const replaced of ['composer','main','cached main'] as const)test(`a replace
       return {phase:window.__CTE_LOCAL__!.status().phase,main:main.getAttribute('data-cte-region'),composer:input.getAttribute('data-cte-region'),background:getComputedStyle(main).backgroundColor,panel:!!document.querySelector('[data-cte-panel]'),backdrop:!!main.querySelector('[data-cte-backdrop]')};
     },{replaced,composer});
     expect(firstFrame).toEqual({phase:'active',main:'main',composer:'composer',background:'rgb(21, 20, 28)',panel:true,backdrop:true});
+    await expect(page.locator('[data-cte-panel]')).toHaveAttribute('data-test-identity','kept');
   }
+  expect(await page.evaluate(()=>{const trace=(window as any).__routeChurn;trace.observer.disconnect();return trace.state;})).toEqual({reserveChanges:0,panelRemovals:0});
 });
 
 test('sending temporarily locks the native editor without removing the cockpit, backdrop or palette',async({page})=>{
