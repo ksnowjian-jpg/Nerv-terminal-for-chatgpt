@@ -25,9 +25,9 @@ async function assertLoopbackListener(port:number) {
   } catch(error) {throw new Error(`Cannot confirm a loopback-only CDP listener: ${error instanceof Error?error.message:'binding check failed'}`);}
 }
 export async function listTargets(port:number):Promise<CdpTarget[]> {
+  await assertLoopbackListener(port);
   const response=await fetch(`http://127.0.0.1:${validatePort(port)}/json/list`,{redirect:'error',signal:AbortSignal.timeout(2000)});
   if(!response.ok)throw new Error(`CDP returned HTTP ${response.status}`);
-  await assertLoopbackListener(port);
   const targets:unknown=await response.json();
   if(!Array.isArray(targets))throw new Error('Invalid CDP target list');
   return targets.filter((t):t is CdpTarget=>!!t&&typeof t.id==='string'&&typeof t.type==='string'&&typeof t.url==='string'&&typeof t.webSocketDebuggerUrl==='string').filter(allowedTarget);

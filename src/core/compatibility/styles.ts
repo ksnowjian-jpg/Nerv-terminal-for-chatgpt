@@ -6,6 +6,7 @@ const responseSelectors=['[class*="_DilResponseRoot_"]','[class*="_MarkdownRoot_
   .map(selector=>`[data-cte-root] ${selector}${outsideIndependentContent}:not(.rich-text-user-turn):not([data-message-author-role="user"]):not(.rich-text-user-turn *):not([data-message-author-role="user"] *)`);
 const responseScopes=responseSelectors.join(',');
 const neutralBadgeSelectors=responseSelectors.map(selector=>`${selector} [data-d-component="badge"][data-color="secondary"][data-variant="soft"][data-pill]${outsideIndependentContent}`);
+const titleSelectors=responseSelectors.map(selector=>`${selector} :is(h1,h2,h3,h4,h5,h6)[class*="_TextBase_"][class*="_Title_"]${outsideIndependentContent}`);
 const userTextScopes=['.rich-text-user-turn','[data-message-author-role="user"] [class*="_MarkdownRoot_"]','[data-message-author-role="user"] .prose'].map(selector=>`[data-cte-root] ${selector}${outsideIndependentContent}`).join(',');
 export const nativeTokenCss = `[data-cte-root] {
   color:var(--cte-text);
@@ -163,6 +164,11 @@ ${responseScopes} {
   --tw-prose-pre-bg:var(--cte-elevated)!important;
   --tw-prose-th-borders:var(--cte-border)!important;
   --tw-prose-td-borders:var(--cte-border)!important;
+}
+/* DIL titles can carry an inline --text-base-color from the light renderer.
+   Pair their heading text with the theme just as Markdown headings already do. */
+${titleSelectors.join(',')} {
+  --text-base-color:var(--cte-text)!important;
 }
 /* Citation pills explicitly paint an inline var(--gray-75), bypassing their
    semantic surface variables. Re-pair only neutral soft pills in replies. */

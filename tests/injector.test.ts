@@ -15,6 +15,17 @@ describe('controlled injection',()=>{
     expect(new CompatibilityAdapter(document).inspect()).toMatchObject({compatible:true,main:result.main,composer:result.composer});
     document.querySelector('[data-composer-body]')!.remove();expect(new CompatibilityAdapter(document).inspect().compatible).toBe(false);
   });
+  it('retains only an established visible desktop chat while its input is unavailable',()=>{
+    document.body.innerHTML='<div id="layout"><aside class="app-shell-left-panel"><div class="sidebar-navigation"></div></aside><main><div data-composer-body><div class="ProseMirror" role="textbox" contenteditable="true"></div></div></main></div>';
+    const adapter=new CompatibilityAdapter(document),chat=adapter.inspect(),editor=document.querySelector('.ProseMirror')!;
+    editor.removeAttribute('role');expect(adapter.inspect().compatible).toBe(false);expect(adapter.retainsChat(chat)).toBe(true);
+    chat.composer!.setAttribute('inert','');expect(adapter.retainsChat(chat)).toBe(true);chat.composer!.removeAttribute('inert');
+    chat.main!.setAttribute('inert','');expect(adapter.retainsChat(chat)).toBe(false);chat.main!.removeAttribute('inert');
+    chat.main!.setAttribute('hidden','');expect(adapter.retainsChat(chat)).toBe(false);chat.main!.removeAttribute('hidden');
+    const extra=chat.composer!.cloneNode(true) as HTMLElement;chat.main!.append(extra);expect(adapter.retainsChat(chat)).toBe(false);extra.remove();
+    chat.composer!.remove();expect(adapter.retainsChat(chat)).toBe(false);
+    expect(adapter.retainsChat({compatible:false,reason:'Unknown surface'})).toBe(false);
+  });
   it('rejects remote sockets, redirects in URLs and unrelated renderer targets',()=>{
     for(const value of ['ws://localhost:9335/devtools/page/abc','ws://10.0.0.1:9335/devtools/page/abc','wss://127.0.0.1:9335/devtools/page/abc','ws://127.0.0.1:9336/devtools/page/abc','ws://u:p@127.0.0.1:9335/devtools/page/abc','ws://127.0.0.1:9335/devtools/page/abc?q=1'])expect(()=>loopbackSocket(value,9335)).toThrow();
     expect(loopbackSocket('ws://127.0.0.1:9335/devtools/page/abc',9335)).toContain('127.0.0.1');expect(()=>validatePort(80)).toThrow();expect(allowedTarget({id:'1',type:'page',url:'https://evil.test',webSocketDebuggerUrl:''})).toBe(false);

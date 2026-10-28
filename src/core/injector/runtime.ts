@@ -63,10 +63,12 @@ function applyAppearance(theme:ThemePackage,variant:string) {
 }
 function stopWatching() {watcher?.disconnect();watcher=undefined;if(check)clearTimeout(check);check=undefined;}
 function block(reason:string) {desired=null;stopWatching();detach();clearAppearance();phase='blocked';stateReason=reason;}
-function reconcile() {
+function reconcile(next=adapter.inspect()) {
   if(!desired)return;
-  const next=adapter.inspect();
   if(!next.compatible) {
+    // Loss of input readiness is not loss of an established chat surface.
+    // Keep the same layout and artwork while its native composer is busy.
+    if(attachment&&adapter.retainsChat(attachment.compatibility)){attachment.syncChrome();attachment.audit();return;}
     if(attachment)detach();
     phase='suspended';stateReason='当前页面不支持增强，等待返回可识别的聊天页';return;
   }
@@ -157,7 +159,7 @@ function mount(compatibility:CompatibilityResult,theme:ThemePackage,variant:stri
       const runAudit=()=>{
         audit=undefined;
         const current=adapter.inspect();
-        if(!current.compatible||!sameAnchors(current,compatibility)){scheduleCheck();return;}
+        if(current.compatible?!sameAnchors(current,compatibility):!adapter.retainsChat(compatibility)){scheduleCheck();return;}
         finishPaletteTransitions(compatibility);
         readability=measureReadability(compatibility);
         if(readability.passed){unsettledFailures=0;return;}
@@ -197,7 +199,18 @@ window.__CTE_LOCAL__ = {
       // Keep the session alive across SPA routes, even while no supported chat exists.
       // Explicit restore and readability failures disconnect this watcher completely.
       watcher=new MutationObserver(records=>{
-        if(records.some(record=>!(record.target instanceof Element?record.target:record.target.parentElement)?.closest('[data-cte-panel],[data-cte-backdrop],[data-cte-chrome],[data-cte-welcome]'))){attachment?.syncChrome();scheduleCheck();}
+        if(records.some(record=>!(record.target instanceof Element?record.target:record.target.parentElement)?.closest('[data-cte-panel],[data-cte-backdrop],[data-cte-chrome],[data-cte-welcome]'))){
+          const current=attachment?.compatibility;
+          // React may replace the composer or the whole chat during submission.
+          // Bind a recognized replacement in this mutation checkpoint, before
+          // its first paint; the debounce otherwise exposes native light colors.
+          // Unsupported/incomplete routes still use the normal delayed check.
+          if(!current||[current.main,current.navigation,current.composer,current.layout].some(node=>node&&!node.isConnected)||current.profile==='desktop-2026'&&!adapter.retainsChat(current)){
+            const next=adapter.inspect();
+            if(next.compatible){if(check)clearTimeout(check);check=undefined;reconcile(next);return;}
+          }
+          attachment?.syncChrome();scheduleCheck();
+        }
       });
       watcher.observe(document.documentElement,{childList:true,characterData:true,subtree:true,attributes:true,attributeFilter:['id','data-testid','class','role','contenteditable','hidden','inert','aria-hidden','style']});
     }

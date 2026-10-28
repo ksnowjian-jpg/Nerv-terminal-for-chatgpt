@@ -10,6 +10,16 @@ export class CompatibilityAdapter {
     }
     return true;
   }
+  retainsChat(result:CompatibilityResult) {
+    // Only an already recognized chat can survive an unavailable editor. A
+    // submission can temporarily hide/inert the input or remove its textbox
+    // role, while the surrounding chat stays mounted and visible.
+    const {main,navigation,composer,layout}=result;
+    if(result.profile!=='desktop-2026'||!main||!navigation||!composer||!layout)return false;
+    if(!this.available(main)||!this.available(navigation)||!layout.isConnected||!layout.contains(main)||!layout.contains(navigation))return false;
+    const composers=main.querySelectorAll('[data-composer-body]');
+    return composers.length===1&&composers[0]===composer&&main.contains(composer)&&!!navigation.querySelector('.sidebar-navigation')&&composer.querySelectorAll('.ProseMirror').length<=1;
+  }
   findActionIcon(action:'home'):Element|null {
     if(action!=='home')return null;
     const navigation=this.doc.querySelector('aside.app-shell-left-panel');

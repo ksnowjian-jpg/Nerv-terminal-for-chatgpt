@@ -22,7 +22,7 @@ test('branding uses flow layout, preserves controls, rebinds after collapse and 
   await page.locator('.ProseMirror').fill('Still editable');await expect(page.locator('.ProseMirror')).toHaveText('Still editable');
   await page.locator('#column').evaluate(el=>el.setAttribute('hidden',''));await expect(page.locator('[data-cte-chrome="navigation"]')).toHaveCount(0);await expect(page.locator('[data-cte-chrome="header"]')).toHaveCount(1);
   await page.locator('#column').evaluate(el=>el.removeAttribute('hidden'));await expect(page.locator('[data-cte-chrome="navigation"]')).toHaveCount(1);
-  await page.locator('.ProseMirror').evaluate(el=>el.setAttribute('role','none'));await expect(page.locator('[data-cte-chrome]')).toHaveCount(0);await expect(page.locator('[data-cte-style],[data-cte-runtime]')).toHaveCount(2);
+  await page.locator('.ProseMirror').evaluate(el=>el.setAttribute('role','none'));await page.waitForTimeout(300);await expect(page.locator('[data-cte-chrome]')).toHaveCount(2);await expect(page.locator('[data-cte-style],[data-cte-runtime]')).toHaveCount(2);
   await page.locator('.ProseMirror').evaluate(el=>el.setAttribute('role','textbox'));await expect(page.locator('[data-cte-chrome]')).toHaveCount(2);
   await page.getByRole('button',{name:'退出初号机',exact:true}).click();await expect(page.locator('[data-cte-chrome]')).toHaveCount(0);
   await expect(page.locator('[data-cte-chrome-host]')).toHaveCount(0);

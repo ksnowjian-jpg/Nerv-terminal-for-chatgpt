@@ -30,8 +30,8 @@ test('home welcome copy survives native rerenders and restores without touching 
   await expect(copy).toHaveCount(1);await expect(page.locator('[data-cte-welcome-title]')).toHaveText('系统已就绪，等待指令。');
   await page.locator('#welcome span').evaluate(el=>el.textContent='我们要做什么？');await expect(copy).toHaveCount(1);
   // Unsupported route, then back: palette remains and the greeting rebinds once.
-  await page.locator('.ProseMirror').evaluate(el=>el.setAttribute('role','none'));await expect(copy).toHaveCount(0);
-  await page.locator('.ProseMirror').evaluate(el=>el.setAttribute('role','textbox'));await expect(copy).toHaveCount(1);
+  await page.locator('#workspace').evaluate(el=>el.setAttribute('hidden',''));await expect(copy).toHaveCount(0);
+  await page.locator('#workspace').evaluate(el=>el.removeAttribute('hidden'));await expect(copy).toHaveCount(1);
   await page.evaluate(()=>window.__CTE_LOCAL__!.restore());
   await expect(copy).toHaveCount(0);await expect(page.locator('[data-cte-welcome-original]')).toHaveCount(0);
   await expect(page.locator('#welcome')).toBeVisible();await expect(page.locator('#welcome')).toHaveText('我们要做什么？');await expect(page.locator('.ProseMirror')).toHaveText('New draft');
