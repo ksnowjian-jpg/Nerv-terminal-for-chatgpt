@@ -8,6 +8,18 @@
 
 NERV 0.7 采用参考图风格的整幅紫白绿“初号機”标识，并将左右品牌区分为 NERV 铭牌与彩色初号机驾驶舱，加入浅紫装甲、荧光绿能量条、琥珀核心纹样和珊瑚色退出细节。对话区保留炭灰、烟紫与青灰分层和低透明度初号机暗纹。[查看真实驾驶舱面板](docs/nerv-client-panel.png)。完整素材来源见 [素材记录](themes/nerv/assets/SOURCES.md)。
 
+![NERV 主题在真实 ChatGPT 客户端中的新聊天首页](docs/preview-desktop.png)
+
+上图直接截取当前客户端**聊天模式**的新聊天首页与右侧驾驶舱，包含初号机暗纹、当前品牌图和输入提示；为保护隐私，左侧历史列表与账号区域未包含在画面中。它与下面的独立主题管理页面是两个不同界面。
+
+<details>
+<summary>查看同一主题的 Work 模式实机效果</summary>
+
+![NERV 主题在真实客户端中的 Work 首页](docs/preview-work.png)
+
+Work 模式的原生输入框与工具行布局不同，主题保留这两种原生布局。
+
+</details>
 
 在项目根目录双击 **[启动初号机主题.cmd](启动初号机主题.cmd)**；原“测试 NERV 主题.cmd”也已更新为相同流程。无需查找或进入 WindowsApps，也无需更改其文件权限。
 
@@ -58,7 +70,14 @@ npm start
 - 官方 DOM 兼容适配、可撤除注入；设置等不支持的页面暂停布局增强，保留配色以避免闪白，返回聊天后重新绑定。回复独立调色板会同步适配；主动关闭或可读性失败时完整撤除且不会自动重启。本机端口和目标校验。
 - 独立的页面加载后启动覆盖层接口，支持开关、跳过、时长和减少动态效果偏好。音效与真正的启动前动画暂未实现。
 
-![NERV 本地演示](docs/preview-desktop.png)
+<details>
+<summary>独立主题管理页面截图（早期演示，不代表客户端外观）</summary>
+
+![独立主题管理页面的桌面演示](docs/manager-desktop.png)
+
+这是用于主题发现、设置和兼容性说明的本地管理界面。其布局、左侧导航和监控模块不等同于注入 ChatGPT 后的客户端界面；当前客户端实机效果见文首截图。
+
+</details>
 
 ## 关闭与恢复
 
@@ -94,4 +113,10 @@ npm run test:ui
 
 浏览器测试使用 Edge；改用 Chrome 可设置 `$env:BROWSER_CHANNEL='chrome'`。当前验证结果：TypeScript 和生产构建通过，27 项模块测试、34 项桌面／窄屏浏览器测试通过，包含来源标签、首页文案、输入提示、文档分栏及页面切换回归。测试夹具中的额度数字为合成数据；真实客户端仅显示读取到的官方值，预览页面不会加载测试额度。
 
-结构与扩展方法见 [架构](docs/architecture.md)、[添加主题](docs/theme-authoring.md)。截图复现：先启动本地服务，再执行 `node scripts/capture.mjs`。
+结构与扩展方法见 [架构](docs/architecture.md)、[添加主题](docs/theme-authoring.md)。
+
+截图来源与更新方式：
+
+- `docs/preview-desktop.png`：真实客户端首页。启用主题、打开空白新聊天并关闭菜单和文档预览后，运行 `node scripts/run.mjs capture-client --homepage`，检查 `.local-tools/client-homepage.png` 后再复制到该路径。该命令只截取聊天主区与驾驶舱，不包含左侧历史与账号区域；有草稿、附件、可见对话或预览时拒绝截图。
+- `docs/preview-work.png`：同一客户端切换到 Work 模式后的首页，按上述实机截图流程更新。
+- `docs/manager-desktop.png`、`docs/manager-mobile.png`：早期独立管理页面演示。启动本地服务后执行 `node scripts/capture.mjs` 可重新生成管理页面截图，不会覆盖实机图。

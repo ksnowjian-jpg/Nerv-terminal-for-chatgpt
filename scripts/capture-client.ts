@@ -1,12 +1,37 @@
 import {writeFile,mkdir} from 'node:fs/promises';
 import {listTargets,evaluate,captureClip} from './cdp';
 import {probeExpression,anchorsExpression} from './renderer';
+import {independentContentSelector} from '../src/core/compatibility/content-boundaries';
 
 const port=9335;
 const candidates=[];
 for(const target of await listTargets(port)){const report=await evaluate(target,port,await probeExpression()) as {compatible:boolean};if(report.compatible)candidates.push(target);}
 if(candidates.length!==1)throw new Error('Expected a single compatible main window');
 const target=candidates[0];
+if(process.argv.includes('--homepage')){
+  const result=await evaluate(target,port,`(()=>{
+    const anchors=(${await anchorsExpression()}),main=anchors.main;
+    const editor=anchors.composer.querySelector('.ProseMirror[role="textbox"]')||anchors.composer;
+    const panel=document.querySelector('[data-cte-panel]'),welcome=main.querySelector('[data-cte-welcome]');
+    const visible=el=>{const r=el.getBoundingClientRect();if(r.width<=0||r.height<=0||r.bottom<=0||r.top>=innerHeight||el.closest('[hidden],[inert],[aria-hidden="true"]'))return false;for(let p=el;p;p=p.parentElement){const s=getComputedStyle(p);if(s.display==='none'||s.visibility!=='visible'||Number(s.opacity)===0)return false;}return true};
+    const fail=reason=>({reason});
+    if(window.__CTE_LOCAL__?.status().phase!=='active'||!welcome||!visible(welcome)||!panel||!visible(panel))return fail('Open the themed new-chat homepage with the cockpit expanded.');
+    if(editor.textContent.trim()||[...anchors.composer.querySelectorAll('[data-composer-attachments] >*')].some(visible))return fail('A draft or attachment is present; no screenshot was written.');
+    if([...main.querySelectorAll('[data-message-author-role],[data-dil-message-id],.rich-text-user-turn')].some(visible))return fail('Conversation content is visible; no screenshot was written.');
+    if([...document.querySelectorAll('[role="menu"],[role="dialog"],'+${JSON.stringify(independentContentSelector)})].some(visible))return fail('Close menus, dialogs and independent previews before capturing.');
+    // The cockpit starts at the top of the renderer, above main's native
+    // title inset. Keep that header intact while excluding the left sidebar.
+    const rect=main.getBoundingClientRect(),x=Math.ceil(rect.left),y=0;
+    if(x<0||y<0||innerWidth-x<400||innerHeight-y<300)return fail('The homepage capture region is outside the viewport.');
+    return {clip:{x,y,width:Math.floor(innerWidth-x),height:Math.floor(innerHeight-y)}};
+  })()`) as {reason?:string;clip?:{x:number;y:number;width:number;height:number}};
+  if(!result.clip)throw new Error(result.reason||'Homepage privacy checks failed.');
+  await mkdir('.local-tools',{recursive:true});
+  const file='.local-tools/client-homepage.png';
+  await writeFile(file,Buffer.from(await captureClip(target,port,result.clip),'base64'));
+  console.log(JSON.stringify({file,source:'actual-client',excluded:'history navigation and account area',clip:result.clip}));
+  process.exit(0);
+}
 const clips=await evaluate(target,port,`(()=>{
   const anchors=(${await anchorsExpression()});
   const editor=anchors.composer.querySelector('.ProseMirror[role="textbox"]')||anchors.composer;
